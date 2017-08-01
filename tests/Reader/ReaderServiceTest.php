@@ -18,7 +18,7 @@ class ReaderServiceTest extends TestCase
     {
         self::$client = new \MongoDB\Client("mongodb://localhost:27017");
         self::$readerService = new ReaderService(
-            __DIR__.'/fixtures/big.txt', 
+            __DIR__.'/fixtures/awesome.txt', 
             self::$client,
             1000
         );
