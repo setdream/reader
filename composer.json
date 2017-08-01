@@ -1,0 +1,31 @@
+{
+    "name": "eldar/reader",
+    "description": "Big Files Reader",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eldar Kirilov",
+            "email": "setdream@yandex.ru"
+        }
+    ],
+    "require": {
+        "mongodb/mongodb": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            ":vendor\\:package_name\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            ":vendor\\:package_name\\": "tests"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    }
+}
