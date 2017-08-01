@@ -24,43 +24,28 @@ class Storage implements IStorage {
         $this->collection->drop();
     }
 
-    public function save(string $word, int $count):void {
-        if ($this->has($word)) {
-            $this->collection->updateOne(
-                ['word' => $word],
-                ['$inc' => [
-                        'count' => $count
-                    ]
-                ]
-            );
-        } else {
-            $this->collection->insertOne([
-                'word' => $word,
-                'count' => $count
-            ]);
-        }
+    public function insertFromArray(array $data):void {
+        $this->collection->insertMany($data);
     }
 
-    public function count():int {
-        return $this->collection->count();
+    public function aggregate():void {
+        $this->collection->aggregate([
+            ['$group' => ['_id' => '$word', 'count' => ['$sum' => '$count']]],
+            ['$out' => 'data']
+        ]);
     }
 
-    public function getData(int $limit, int $offset):array {
-        return array_map(function($item) {
-            return [
-                'count' => $item->count,
-                'word' => $item->word
-            ];
-        }, $this->collection->find(
-            [],
-            [
+    public function each(int $limit, int $offset, callable $callback):int {
+        $count = 0;
+
+        foreach($this->collection->find([], [
                 'limit' => $limit,
                 'skip' => $offset
-            ]
-        )->toArray());
-    }
+        ]) as $item) {
+            $callback($item->_id, $item->count);
+            $count++;
+        }
 
-    public function has(string $word):bool {
-        return !is_null($this->collection->findOne(['word' => $word]));
+        return $count;
     }
 }

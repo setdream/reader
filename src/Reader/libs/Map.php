@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace Reader\Libs;
 
-class Map {
+use Reader\Interfaces\IMap;
+
+class Map implements IMap {
     private $size;
     private $data = [];
 
@@ -11,42 +13,21 @@ class Map {
         $this->size = $size;
     }
 
-    public function init(array $data):Map {
-        $this->data = $data;
-
-        return $this;
-    }
-
-    private function search(string $key) {
-        return array_search($key, array_column($this->data, 'word'));
-    }
-
-    public function set(string $key, int $value):void {
-        $index = $this->search($key);
-
-        if ($index) {
-            $this->data[$index]['count'] = $value;
-        } else {
-            array_push($this->data, [
-                'count' => $value,
-                'word' => $key
-            ]);
-        }
+    public function set(string $key, $value):void {
+        $this->data[$key] = $value;
     }
     
     public function get(string $key) {
-        $index = $this->search($key);
-
-        return $index ? $this->data[$index] : null;
+        return $this->data[$key];
     }
 
     public function has(string $key):bool {
-        return !is_null($this->get($key));
+        return array_key_exists($key, $this->data);
     }
 
     public function each(callable $callback):void {
-        foreach($this->data as $item) {
-            $callback($item);
+        foreach($this->data as $key => $value) {
+            $callback($key, $value);
         }
     }
 
@@ -62,7 +43,13 @@ class Map {
         $this->data = [];
     }
 
-    public function toArray():array {
-        return $this->data;
+    public function toArray(callable $callback):array {
+        $data = [];
+
+        foreach($this->data as $key => $value) {
+            array_push($data, $callback($key, $value));
+        }
+
+        return $data;
     }
 }

@@ -6,8 +6,6 @@ namespace Reader\Interfaces;
 interface IStorage
 {
     public function clear():void;
-    public function save(string $word, int $count):void;
-    public function has(string $word):bool;
-    public function count():int;
-    public function getData(int $limit, int $offset):array;
+    public function insertFromArray(array $data):void;
+    public function each(int $limit, int $offset, callable $callback):int;
 }

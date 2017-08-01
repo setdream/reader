@@ -28,15 +28,16 @@ class ReaderServiceTest extends TestCase
     {
         self::$readerService->load();
 
-        $count = 0;
+        $total = 0;
+        $cb = function($word, $count) use (&$total) {
+            $total += $count;
+        };
 
-        self::$readerService->read(function($items) use (&$count) {
-            $count += array_reduce($items, function($acc, $item) {
-                return $acc + $item['count'];
-            }, 0);
+        self::$readerService->read(function($map) use ($cb) {
+            $map->each($cb);
         });
 
-        $this->assertEquals($count, 13);
+        $this->assertEquals($total, 13);
     }
 
     public static function tearDownAfterClass()

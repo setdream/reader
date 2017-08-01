@@ -31,6 +31,7 @@ class ReaderService {
         });
 
         $this->repository->sync();
+        $this->storage->aggregate();
     }
 
     public function read(callable $callback):void {

@@ -20,10 +20,8 @@ class WordsRepository {
     }
 
     public function save(string $word):void {
-        $item = $this->map->get($word);
-
-        if (!is_null($item)) {
-            $this->map->set($word, $item['count'] + 1);
+        if ($this->map->has($word)) {
+            $this->map->set($word, $this->map->get($word) + 1);
         } else {
             if ($this->map->isFull()) {
                 $this->sync();
@@ -34,18 +32,22 @@ class WordsRepository {
     }
 
     public function sync():void {
-        $this->map->each(function($item) {
-            $this->storage->save($item['word'], $item['count']);
-        });
+        $this->storage->insertFromArray($this->map->toArray(function($word, $count) {
+            return [
+                'word' => (string) $word,
+                'count' => $count
+            ];
+        }));
 
         $this->map->clear();
     }
 
     public function each(callable $callback, int $offset = 0):void {
-         while($this->map->init(
-             $this->storage->getData($this->limit, $offset))->count() > 0) {
-                $callback($this->map->toArray());
-                $offset += $this->limit;
-         }
+        while($this->map->clear() || $this->storage->each($this->limit, $offset, function($word, $count) {
+            $this->map->set($word, $count);
+        }) > 0) {
+            $callback($this->map);
+            $offset += $this->limit;
+        }
     }
 }
