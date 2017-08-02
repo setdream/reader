@@ -26,7 +26,7 @@ class ReaderService {
     }
 
     public function load():void {
-        $this->fileReader->read(function($word) {
+        $this->fileReader->readString(function($word) {
             $this->repository->save($word);
         });
 
