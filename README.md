@@ -38,6 +38,9 @@
 ![Very Big Test](/images/very_big_test.png)
 
 
+PS. Тестировал только на анг. текстах.
+
+
 ## Установка
 
 Через Composer
